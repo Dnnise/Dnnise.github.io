@@ -1046,4 +1046,25 @@
             }
             const data = JSON.parse(localStorage.getItem('comments') || '[]');
             const now = new Date();
-            const time = now.toLocaleString('zh-C
+            const time = now.toLocaleString('zh-CN', { hour12: false });
+            data.push({ name, text, time });
+            localStorage.setItem('comments', JSON.stringify(data));
+            commentName.value = '';
+            commentInput.value = '';
+            loadComments();
+        }
+
+        commentSubmit.addEventListener('click', addComment);
+        commentInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') addComment();
+        });
+        commentName.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') commentInput.focus();
+        });
+
+        // 加载已有评论
+        loadComments();
+    </script>
+
+</body>
+</html>

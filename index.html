@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dnnise 的个人网站</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dnnise · 科技空间</title>
     <style>
-        /* ===== 全局样式 ===== */
+        /* ===== 基础重置 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -13,239 +13,636 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            background: #0a0e17;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
+            overflow-x: hidden;
+            color: #e0e8f0;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 40px;
-            padding: 50px 40px;
-            max-width: 720px;
+        /* ===== 粒子画布 ===== */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            transition: transform 0.3s ease;
-            text-align: center;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== 主卡片 ===== */
+        .card {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            width: 100%;
+            background: rgba(10, 14, 23, 0.70);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 56px 48px 44px;
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.06), inset 0 0 60px rgba(0, 255, 255, 0.02);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
+            box-shadow: 0 0 80px rgba(0, 255, 255, 0.10), inset 0 0 80px rgba(0, 255, 255, 0.04);
         }
 
-        /* ===== 头像 ===== */
-        .avatar {
-            width: 120px;
-            height: 120px;
+        /* ===== 顶部状态栏 ===== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: rgba(0, 255, 255, 0.5);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.06);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00ffc8;
             border-radius: 50%;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+            margin-right: 8px;
+            animation: pulse-dot 2s ease-in-out infinite;
+            box-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+
+        .status-code {
+            color: rgba(0, 255, 255, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ===== 头像 + 标题区 ===== */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-ring {
+            width: 104px;
+            height: 104px;
+            border-radius: 50%;
+            padding: 3px;
+            background: conic-gradient(from 0deg, #00ffc8, #7b2ffc, #00ffc8);
+            animation: spin-ring 8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #0a0e17;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 52px;
-            font-weight: 600;
-            color: #fff;
-            margin: 0 auto 20px;
-            box-shadow: 0 12px 28px rgba(245, 87, 108, 0.35);
+            font-size: 44px;
+            font-weight: 700;
+            color: #00ffc8;
+            font-family: 'Courier New', monospace;
             user-select: none;
         }
 
-        /* ===== 标题 ===== */
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
+        .hero-text h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ffc8, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
         }
 
-        .subtitle {
+        .hero-text .tagline {
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.5);
             font-weight: 300;
+            letter-spacing: 2px;
+            margin-top: 4px;
         }
 
-        /* ===== 分割线 ===== */
-        .divider {
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, #f093fb, #f5576c);
-            margin: 0 auto 28px;
-            border-radius: 4px;
+        .hero-text .tagline span {
+            color: #00ffc8;
+            font-weight: 400;
+        }
+
+        /* ===== 打字动画 ===== */
+        .typing-wrapper {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 28px;
+            font-family: 'Courier New', monospace;
+            min-height: 28px;
+            border-left: 2px solid #00ffc8;
+            padding-left: 16px;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background: #00ffc8;
+            margin-left: 2px;
+            animation: blink 0.9s step-end infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
         }
 
         /* ===== 关于我 ===== */
-        .about {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 16px;
-            line-height: 1.8;
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 30px;
+            background: rgba(0, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 24px 28px;
             margin-bottom: 32px;
-            text-align: left;
-            padding: 0 4px;
+            border: 1px solid rgba(0, 255, 255, 0.06);
         }
 
-        .about strong {
-            color: #f093fb;
-            font-weight: 600;
-        }
-
-        /* ===== 技能标签 ===== */
-        .skills {
+        .about-item {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .about-item .icon {
+            font-size: 18px;
+            width: 32px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .about-item .label {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: block;
+        }
+
+        .about-item .value {
+            color: #e0e8f0;
+            font-weight: 500;
+        }
+
+        /* ===== 技能条 ===== */
+        .skills-section {
+            margin-bottom: 32px;
+        }
+
+        .skills-section .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(0, 255, 255, 0.3);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .skill-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .skill-row .name {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            width: 80px;
+            flex-shrink: 0;
+            font-weight: 400;
+        }
+
+        .skill-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #00ffc8, #7b2ffc);
+            width: 0%;
+            transition: width 1.2s ease;
+        }
+
+        /* ===== 项目展示 ===== */
+        .projects {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
             margin-bottom: 34px;
         }
 
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.10);
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 14px;
-            color: #e0e0e0;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: 0.25s;
-            cursor: default;
-            backdrop-filter: blur(4px);
+        .project-card {
+            background: rgba(0, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 18px 20px;
+            transition: 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
-        .skill-tag:hover {
-            background: rgba(245, 87, 108, 0.25);
-            border-color: #f5576c;
+        .project-card:hover {
+            background: rgba(0, 255, 255, 0.07);
+            border-color: rgba(0, 255, 255, 0.20);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-card .proj-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        .project-card .proj-name {
+            font-size: 15px;
+            font-weight: 600;
             color: #fff;
-            transform: scale(1.05);
+        }
+        .project-card .proj-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 4px;
+        }
+        .project-card .proj-tag {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            background: rgba(0, 255, 255, 0.08);
+            color: #00ffc8;
+            letter-spacing: 0.5px;
         }
 
-        /* ===== 社交按钮 ===== */
-        .social-links {
+        /* ===== 底部社交 ===== */
+        .social-row {
             display: flex;
             justify-content: center;
             gap: 16px;
             flex-wrap: wrap;
+            padding-top: 22px;
+            border-top: 1px solid rgba(0, 255, 255, 0.06);
         }
 
-        .social-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            border-radius: 60px;
-            font-size: 15px;
-            font-weight: 600;
-            text-decoration: none;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            transition: 0.3s ease;
-            backdrop-filter: blur(4px);
-            letter-spacing: 0.5px;
-        }
-
-        .social-btn:hover {
-            background: #f5576c;
-            border-color: #f5576c;
-            transform: scale(1.04);
-            box-shadow: 0 8px 24px rgba(245, 87, 108, 0.35);
-        }
-
-        .social-btn.github:hover {
-            background: #6e5494;
-            border-color: #6e5494;
-            box-shadow: 0 8px 24px rgba(110, 84, 148, 0.40);
-        }
-
-        /* ===== 页脚 ===== */
-        .footer {
-            margin-top: 36px;
+        .social-link {
+            padding: 10px 28px;
+            border-radius: 40px;
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.25);
-            letter-spacing: 0.3px;
+            font-weight: 500;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.08);
+            transition: 0.3s ease;
+            letter-spacing: 0.5px;
+            background: rgba(0, 255, 255, 0.02);
         }
 
-        .footer span {
-            color: #f5576c;
+        .social-link:hover {
+            background: rgba(0, 255, 255, 0.10);
+            border-color: #00ffc8;
+            color: #00ffc8;
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.08);
+            transform: scale(1.02);
+        }
+
+        .footer-meta {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.12);
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer-meta span {
+            color: rgba(0, 255, 200, 0.2);
         }
 
         /* ===== 响应式 ===== */
-        @media (max-width: 500px) {
+        @media (max-width: 700px) {
             .card {
                 padding: 32px 20px;
+                border-radius: 32px;
             }
-            h1 {
-                font-size: 26px;
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            .avatar {
-                width: 90px;
-                height: 90px;
-                font-size: 38px;
+            .hero-text h1 {
+                font-size: 30px;
             }
-            .social-btn {
-                padding: 10px 22px;
-                font-size: 14px;
+            .about-grid {
+                grid-template-columns: 1fr;
+                padding: 18px 20px;
+            }
+            .projects {
+                grid-template-columns: 1fr;
+            }
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .avatar-ring {
+                width: 76px;
+                height: 76px;
+            }
+            .avatar-inner {
+                font-size: 30px;
+            }
+            .hero-text h1 {
+                font-size: 24px;
+            }
+            .social-link {
+                padding: 8px 18px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== 粒子背景 ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== 主卡片 ===== -->
     <div class="card">
 
-        <!-- 头像 -->
-        <div class="avatar">🌊</div>
-
-        <!-- 标题 -->
-        <h1>Dnnise</h1>
-        <p class="subtitle">✨ 用代码搭建属于我的小世界</p>
-
-        <div class="divider"></div>
-
-        <!-- 关于我 -->
-        <div class="about">
-            <p>
-                👋 你好呀！我是 <strong>Dnnise</strong>，一名热爱编程与设计的开发者。<br>
-                喜欢捣鼓前端、探索新技术，也享受把想法变成现实的过程。<br>
-                这个站点是我的 GitHub Pages 小天地，未来会在这里分享：
-            </p>
-            <ul style="margin-top: 12px; padding-left: 20px; color: rgba(255,255,255,0.75);">
-                <li>📝 学习笔记 &amp; 技术文章</li>
-                <li>🎨 个人项目 &amp; 小工具</li>
-                <li>🚀 成长路上的点滴</li>
-            </ul>
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>
+                <span class="status-dot"></span> system · online
+            </span>
+            <span class="status-code">~/Dnnise/portfolio</span>
         </div>
 
-        <!-- 技能标签 -->
-        <div class="skills">
-            <span class="skill-tag">HTML5</span>
-            <span class="skill-tag">CSS3</span>
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">Git</span>
-            <span class="skill-tag">Python</span>
+        <!-- 头像 + 标题 -->
+        <div class="hero">
+            <div class="avatar-ring">
+                <div class="avatar-inner">D</div>
+            </div>
+            <div class="hero-text">
+                <h1>Dnnise</h1>
+                <div class="tagline">✦ <span>Build</span> · <span>Create</span> · <span>Evolve</span></div>
+            </div>
+        </div>
+
+        <!-- 打字动画 -->
+        <div class="typing-wrapper" id="typing-text">
+            <span id="typed"></span><span class="typing-cursor"></span>
+        </div>
+
+        <!-- 关于我 信息网格 -->
+        <div class="about-grid">
+            <div class="about-item">
+                <span class="icon">🧑‍💻</span>
+                <div>
+                    <span class="label">角色</span>
+                    <span class="value">全栈开发者</span>
+                </div>
+            </div>
+            <div class="about-item">
+                <span class="icon">📍</span>
+                <div>
+                    <span class="label">坐标</span>
+                    <span class="value">上海 · 中国</span>
+                </div>
+            </div>
+            <div class="about-item">
+                <span class="icon">🎯</span>
+                <div>
+                    <span class="label">专注</span>
+                    <span class="value">Web 开发 · 创意编程</span>
+                </div>
+            </div>
+            <div class="about-item">
+                <span class="icon">⚡</span>
+                <div>
+                    <span class="label">状态</span>
+                    <span class="value" style="color:#00ffc8;">● 构建中</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技能条 -->
+        <div class="skills-section">
+            <span class="section-label">⚙️ 技术栈</span>
+
+            <div class="skill-row">
+                <span class="name">HTML / CSS</span>
+                <div class="skill-track"><div class="skill-fill" style="width:90%;"></div></div>
+            </div>
+            <div class="skill-row">
+                <span class="name">JavaScript</span>
+                <div class="skill-track"><div class="skill-fill" style="width:80%;"></div></div>
+            </div>
+            <div class="skill-row">
+                <span class="name">React</span>
+                <div class="skill-track"><div class="skill-fill" style="width:70%;"></div></div>
+            </div>
+            <div class="skill-row">
+                <span class="name">Python</span>
+                <div class="skill-track"><div class="skill-fill" style="width:65%;"></div></div>
+            </div>
+        </div>
+
+        <!-- 项目展示 -->
+        <div class="projects">
+            <a href="#" class="project-card">
+                <div class="proj-icon">🌐</div>
+                <div class="proj-name">Portfolio 2026</div>
+                <div class="proj-desc">个人品牌网站 · 全栈设计</div>
+                <span class="proj-tag"># 进行中</span>
+            </a>
+            <a href="#" class="project-card">
+                <div class="proj-icon">🤖</div>
+                <div class="proj-name">AI 小工具</div>
+                <div class="proj-desc">智能对话 &amp; 自动化实验</div>
+                <span class="proj-tag"># 探索</span>
+            </a>
         </div>
 
         <!-- 社交链接 -->
-        <div class="social-links">
-            <a href="https://github.com/Dnnise" target="_blank" class="social-btn github">
-                🐙 GitHub
-            </a>
-            <a href="#" class="social-btn">
-                📧 联系我
-            </a>
+        <div class="social-row">
+            <a href="https://github.com/Dnnise" target="_blank" class="social-link">🐙 GitHub</a>
+            <a href="#" class="social-link">📧 联系</a>
+            <a href="#" class="social-link">📝 博客</a>
         </div>
 
-        <!-- 页脚 -->
-        <div class="footer">
-            🌟 用 <span>❤</span> 打造 &nbsp;·&nbsp; 2026
+        <div class="footer-meta">
+            <span>✦</span> 2026 · Dnnise <span>✦</span>
         </div>
 
     </div>
+
+    <script>
+        // ============================================================
+        // 1. 粒子背景
+        // ============================================================
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        const particles = [];
+        const COUNT = 80;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.r = Math.random() * 1.8 + 0.6;
+                this.a = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 255, 200, ${this.a})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 140) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 255, 200, ${0.08 * (1 - dist / 140)})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach(p => { p.update();
+                p.draw(); });
+            drawLines();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ============================================================
+        // 2. 打字机效果
+        // ============================================================
+        const phrases = [
+            '> 探索 · 创造 · 分享',
+            '> 用代码构建未来',
+            '> 欢迎来到 Dnnise 的空间'
+        ];
+        let phraseIdx = 0;
+        let charIdx = 0;
+        let isDeleting = false;
+        const typedEl = document.getElementById('typed');
+
+        function typeEffect() {
+            const current = phrases[phraseIdx];
+            if (!isDeleting) {
+                typedEl.textContent = current.slice(0, charIdx++);
+                if (charIdx > current.length) {
+                    isDeleting = true;
+                    setTimeout(typeEffect, 1800);
+                    return;
+                }
+                setTimeout(typeEffect, 70);
+            } else {
+                typedEl.textContent = current.slice(0, charIdx--);
+                if (charIdx < 0) {
+                    isDeleting = false;
+                    phraseIdx = (phraseIdx + 1) % phrases.length;
+                    charIdx = 0;
+                    setTimeout(typeEffect, 400);
+                    return;
+                }
+                setTimeout(typeEffect, 40);
+            }
+        }
+
+        // 页面加载后等 0.6s 再启动打字
+        setTimeout(typeEffect, 600);
+    </script>
 
 </body>
 </html>
